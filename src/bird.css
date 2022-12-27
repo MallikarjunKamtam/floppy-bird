@@ -1,0 +1,5 @@
+.bird__body {
+  border-radius: 100%;
+  background-color: yellow;
+  border: 3px solid black;
+}
