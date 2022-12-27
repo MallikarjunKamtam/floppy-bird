@@ -39,6 +39,11 @@ function App() {
       dispatch(setGameOn(false));
       dispatch(setGameOver(true));
     }
+
+    if (birdPosition > 750) {
+      dispatch(setGameOn(false));
+      dispatch(setGameOver(true));
+    }
   }, [obsticlePosition, birdPosition, isGameOn]);
 
   useEffect(() => {
