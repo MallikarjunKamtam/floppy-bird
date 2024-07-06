@@ -15,9 +15,26 @@ function App() {
   const { setGameOn, setScore, setGameOver } = birdActions;
 
   const handleClick = () => {
-    dispatch(setGameOn(true));
+    const { setGameOn, setScore, setGameOver } = birdActions;
+    if (!isGameOn) {
+      dispatch(setGameOn(true));
+    }
     setBirdPosition(birdPosition - CONSTANTS.JUMP);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      console.log(event.key);
+      if ([" ", "Enter"].includes(event.key)) {
+        !isGameOver && handleClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isGameOver, isGameOn, birdPosition]);
 
   useEffect(() => {
     setTopObsticleHeight(getRandomArbitrary(250, 350));

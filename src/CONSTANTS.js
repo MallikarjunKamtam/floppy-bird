@@ -4,9 +4,9 @@ const constants = {
   GRAVITY: 6,
   JUMP: 100,
   OBSTICLE_GAP: 250,
-  WINDOW_HEIGHT: 800,
-  WINDOW_WIDTH: 1000,
-  SPEED: 5,
+  WINDOW_HEIGHT: 900,
+  WINDOW_WIDTH: 1500,
+  SPEED: 3.4,
 };
 
 export default constants;
