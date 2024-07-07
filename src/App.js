@@ -213,11 +213,12 @@ const ObesticleTop = ({ height }) => {
 const BottomObsticle = ({ height }) => {
   return (
     <div
+      className="bottom__obsticle"
       style={{
         backgroundColor: "green",
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: CONSTANTS.WINDOW_HEIGHT - height - CONSTANTS.OBSTICLE_GAP,
+        height: window.innerHeight - height - CONSTANTS.OBSTICLE_GAP,
         width: 150,
       }}
     ></div>
