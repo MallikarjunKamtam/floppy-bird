@@ -17,7 +17,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docker" : "docker run -p 3000:3000 floppy-bird-app:latest",
+    "stop-docker":"docker stop floppy-bird-app",
+    "remove-docker": "docker rm floppy-bird-app"
   },
   "eslintConfig": {
     "extends": [
