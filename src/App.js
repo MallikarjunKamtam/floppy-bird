@@ -90,7 +90,7 @@ function App() {
           }));
 
           // Add a new obstacle when the last obstacle is at a certain position
-          if (newObstacles[newObstacles.length - 1].position >= 500) {
+          if (newObstacles[newObstacles.length - 1].position >= 400) {
             newObstacles.push({
               position: 0,
               height: getRandomArbitrary(250, 350),
