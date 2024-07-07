@@ -5,6 +5,8 @@ import CONSTANTS from "./CONSTANTS";
 import { useDispatch, useSelector } from "react-redux";
 import { birdActions, birdState } from "./app.slice";
 import { useEffect, useState } from "react";
+import ObesticleBlock from "./components/obsticle";
+import { getRandomArbitrary } from "./utils";
 
 function App() {
   const [birdPosition, setBirdPosition] = useState(0);
@@ -24,8 +26,11 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if ([" ", "Enter"].includes(event.key)) {
+      if (["Enter"].includes(event.key)) {
         !isGameOver && handleClick();
+      }
+      if (event.key === " ") {
+        pauseGame();
       }
     };
 
@@ -102,6 +107,10 @@ function App() {
     };
   }, [isGameOn]);
 
+  const pauseGame = () => {
+    dispatch(setGameOn(false));
+  };
+
   return (
     <div className="App">
       <div
@@ -133,7 +142,11 @@ function App() {
                 top: 0,
               }}
             >
-              <ObesticleTop height={obstacle.height} />
+              <ObesticleBlock
+                height={obstacle.height}
+                key={"top" + index}
+                position={"top"}
+              />
             </div>
             <div
               style={{
@@ -143,7 +156,11 @@ function App() {
                 bottom: 0,
               }}
             >
-              <BottomObsticle height={obstacle.height} />
+              <ObesticleBlock
+                height={obstacle.height}
+                key={"bottom" + index}
+                position={"bottom"}
+              />
             </div>
           </div>
         ))}
@@ -196,9 +213,7 @@ function App() {
               border: "none",
               cursor: "pointer",
             }}
-            onClick={() => {
-              dispatch(setGameOn(false));
-            }}
+            onClick={pauseGame}
           >
             Pause
           </button>
@@ -211,36 +226,3 @@ function App() {
 }
 
 export default App;
-
-const ObesticleTop = ({ height }) => {
-  return (
-    <div
-      style={{
-        backgroundColor: "green",
-        height: height,
-        width: 150,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-      }}
-    ></div>
-  );
-};
-
-const BottomObsticle = ({ height }) => {
-  return (
-    <div
-      className="bottom__obsticle"
-      style={{
-        backgroundColor: "green",
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        height: window.innerHeight - height - CONSTANTS.OBSTICLE_GAP,
-        width: 150,
-      }}
-    ></div>
-  );
-};
-
-function getRandomArbitrary(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
-}
