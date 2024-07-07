@@ -8,14 +8,14 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [birdPosition, setBirdPosition] = useState(0);
-  const [obsticlePosition, setObsticlePosition] = useState(0);
-  const [topObsticleHeight, setTopObsticleHeight] = useState(300);
+  const [obstacles, setObstacles] = useState([
+    { position: 0, height: getRandomArbitrary(250, 350) },
+  ]);
   const dispatch = useDispatch();
   const { isGameOn, isGameOver, score } = useSelector(birdState);
   const { setGameOn, setScore, setGameOver } = birdActions;
 
   const handleClick = () => {
-    const { setGameOn, setScore, setGameOver } = birdActions;
     if (!isGameOn) {
       dispatch(setGameOn(true));
     }
@@ -24,7 +24,6 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      console.log(event.key);
       if ([" ", "Enter"].includes(event.key)) {
         !isGameOver && handleClick();
       }
@@ -37,21 +36,13 @@ function App() {
   }, [isGameOver, isGameOn, birdPosition]);
 
   useEffect(() => {
-    setTopObsticleHeight(getRandomArbitrary(250, 350));
-  }, [score]);
-
-  function getRandomArbitrary(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-  }
-
-  useEffect(() => {
-    if (birdPosition <= topObsticleHeight && obsticlePosition >= 785) {
+    if (birdPosition <= obstacles[0].height && obstacles[0].position >= 785) {
       dispatch(setGameOn(false));
       dispatch(setGameOver(true));
     }
     if (
-      birdPosition >= topObsticleHeight + CONSTANTS.OBSTICLE_GAP &&
-      obsticlePosition >= 785
+      birdPosition >= obstacles[0].height + CONSTANTS.OBSTICLE_GAP &&
+      obstacles[0].position >= 785
     ) {
       dispatch(setGameOn(false));
       dispatch(setGameOver(true));
@@ -61,7 +52,7 @@ function App() {
       dispatch(setGameOn(false));
       dispatch(setGameOver(true));
     }
-  }, [obsticlePosition, birdPosition, isGameOn]);
+  }, [obstacles, birdPosition, isGameOn]);
 
   useEffect(() => {
     let birdDropAction;
@@ -79,19 +70,37 @@ function App() {
   }, [isGameOn, birdPosition]);
 
   useEffect(() => {
-    let birdDropAction;
-    if (obsticlePosition >= 1000) {
-      setObsticlePosition(0);
-      dispatch(setScore(score + 1));
+    let intervalId;
+    if (isGameOn) {
+      intervalId = setInterval(() => {
+        setObstacles((prevObstacles) => {
+          let newObstacles = prevObstacles.map((obstacle) => ({
+            ...obstacle,
+            position: obstacle.position + CONSTANTS.SPEED,
+          }));
+
+          // Add a new obstacle when the last obstacle is at a certain position
+          if (newObstacles[newObstacles.length - 1].position >= 500) {
+            newObstacles.push({
+              position: 0,
+              height: getRandomArbitrary(250, 350),
+            });
+          }
+
+          // Remove obstacles that have moved out of the screen
+          newObstacles = newObstacles.filter(
+            (obstacle) => obstacle.position < 1000
+          );
+
+          return newObstacles;
+        });
+      }, 24);
     }
-    birdDropAction = setInterval(() => {
-      isGameOn && setObsticlePosition((position) => position + CONSTANTS.SPEED);
-    }, 24);
 
     return () => {
-      clearInterval(birdDropAction);
+      clearInterval(intervalId);
     };
-  }, [isGameOn, obsticlePosition]);
+  }, [isGameOn]);
 
   return (
     <div className="App">
@@ -114,26 +123,30 @@ function App() {
         >
           <Bird />
         </div>
-        <div
-          style={{
-            position: "absolute",
-            overflow: "hidden",
-            right: obsticlePosition,
-            top: 0,
-          }}
-        >
-          <ObesticleTop height={topObsticleHeight} />
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            overflow: "hidden",
-            right: obsticlePosition,
-            bottom: 0,
-          }}
-        >
-          <BottomObsticle height={topObsticleHeight} />
-        </div>
+        {obstacles.map((obstacle, index) => (
+          <div key={index}>
+            <div
+              style={{
+                position: "absolute",
+                overflow: "hidden",
+                right: obstacle.position,
+                top: 0,
+              }}
+            >
+              <ObesticleTop height={obstacle.height} />
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                overflow: "hidden",
+                right: obstacle.position,
+                bottom: 0,
+              }}
+            >
+              <BottomObsticle height={obstacle.height} />
+            </div>
+          </div>
+        ))}
       </div>
       <div
         style={{
@@ -160,7 +173,10 @@ function App() {
               dispatch(setGameOn(true));
               isGameOver && dispatch(setGameOver(false));
               isGameOver && setBirdPosition(0);
-              isGameOver && setObsticlePosition(0);
+              isGameOver &&
+                setObstacles([
+                  { position: 0, height: getRandomArbitrary(250, 350) },
+                ]);
               isGameOver && dispatch(setScore(0));
             }}
           >
@@ -224,3 +240,7 @@ const BottomObsticle = ({ height }) => {
     ></div>
   );
 };
+
+function getRandomArbitrary(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
