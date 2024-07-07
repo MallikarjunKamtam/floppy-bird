@@ -7,6 +7,8 @@ import { birdActions, birdState } from "./app.slice";
 import { useEffect, useState } from "react";
 import ObesticleBlock from "./components/obsticle";
 import { getRandomArbitrary } from "./utils";
+import jumpSound from "./resources/smb_kick.wav";
+import bumpSound from "./resources/smb_bump.wav";
 
 function App() {
   const [birdPosition, setBirdPosition] = useState(0);
@@ -21,6 +23,8 @@ function App() {
     if (!isGameOn) {
       dispatch(setGameOn(true));
     }
+    const jump = new Audio(jumpSound);
+    jump.play();
     setBirdPosition(birdPosition - CONSTANTS.JUMP);
   };
 
@@ -40,22 +44,23 @@ function App() {
     };
   }, [isGameOver, isGameOn, birdPosition]);
 
+  const gameOver = () => {
+    const bump = new Audio(bumpSound);
+    bump.play();
+
+    dispatch(setGameOn(false));
+    dispatch(setGameOver(true));
+  };
+
   useEffect(() => {
     if (birdPosition <= obstacles[0].height && obstacles[0].position >= 785) {
-      dispatch(setGameOn(false));
-      dispatch(setGameOver(true));
+      gameOver();
     }
     if (
       birdPosition >= obstacles[0].height + CONSTANTS.OBSTICLE_GAP &&
       obstacles[0].position >= 785
     ) {
-      dispatch(setGameOn(false));
-      dispatch(setGameOver(true));
-    }
-
-    if (birdPosition > 750) {
-      dispatch(setGameOn(false));
-      dispatch(setGameOver(true));
+      gameOver();
     }
   }, [obstacles, birdPosition, isGameOn]);
 

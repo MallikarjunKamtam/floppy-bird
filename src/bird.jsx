@@ -1,10 +1,7 @@
 import React from "react";
 import "./bird.css";
 import CONSTANTS from "./CONSTANTS";
-import { useDispatch, useSelector } from "react-redux";
-import { birdActions, birdState } from "./app.slice";
-import { useEffect, useState } from "react";
-import bird from "./angry-birds.png";
+import bird from "./resources/angry-birds.png";
 
 const Bird = () => {
   return (
